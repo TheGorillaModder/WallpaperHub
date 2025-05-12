@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Random Ad</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 160px;
+      height: 600px;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+      background-color: #0d0d0d;
+      color: #0d0d0d;
+    }
+
+    .ad-container {
+      width: 160px;
+      height: 600px;
+      border: 1px solid #222;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: #1a1a1a;
+    }
+
+    .ad-header {
+      background: #111;
+      color: #00bfff;
+      padding: 10px;
+      font-size: 15px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .ad-body {
+      flex: 1;
+      padding: 10px;
+      font-size: 13px;
+      color: #ccc;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .ad-link {
+      display: block;
+      margin: 10px;
+      padding: 8px;
+      text-align: center;
+      background: #00bfff;
+      color: #000;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .ad-link:hover {
+      background: #0099cc;
+    }
+  </style>
+</head>
+<body>
+  <div class="ad-container" id="adBox"></div>
+
+  <script>
+    const ads = [
+      {
+        title: "Classroom Center Unblocked Games",
+        desc: "Play free games at school with no limits. New games added weekly!",
+        link: "https://sites.google.com/classroom.center/view/home"
+      },
+      {
+        title: "Space Proxy",
+        desc: "Bypass school restrictions and surf freely with Space Proxy.",
+        link: "https://info.faizinternational.com.np"
+      },
+      {
+        title: "Coolmath Games",
+        desc: "Train your brain with puzzles and games — unblocked and fun!",
+        link: "https://www.coolmathgames.com"
+      },
+      {
+        title: "CroxyProxy Web Unblocker",
+        desc: "Unblock YouTube, Discord, and more right from your browser.",
+        link: "https://www.croxyproxy.com/"
+      },
+      {
+        title: "Unsplash Wallpapers",
+        desc: "Get stunning wallpapers for your desktop and phone — free.",
+        link: "https://unsplash.com/wallpapers"
+      },
+      {
+        title: "Wallpapers.com",
+        desc: "Download HD & 4K wallpapers for any device instantly.",
+        link: "https://wallpapers.com"
+      },
+      {
+        title: "Proxyium School Bypass",
+        desc: "Browse your favorite sites in seconds, even at school.",
+        link: "https://proxyium.com"
+      },
+      {
+        title: "Unblocked Games 77",
+        desc: "Access tons of unblocked games now — free & no login needed!",
+        link: "https://sites.google.com/site/unblockedgames77/home"
+      }
+    ];
+
+    const ad = ads[Math.floor(Math.random() * ads.length)];
+
+    document.getElementById('adBox').innerHTML = `
+      <div class="ad-header">${ad.title}</div>
+      <div class="ad-body">${ad.desc}</div>
+      <a class="ad-link" href="${ad.link}" target="_blank">Visit Now</a>
+    `;
+  </script>
+</body>
+</html>
