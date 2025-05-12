@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wallpaper Hub</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: white;
+    }
+
+    /* Ad frames */
+    .left-ad, .right-ad {
+      position: fixed;
+      top: 0;
+      width: 160px;
+      height: 100vh;
+      background-color: #1a1a1a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+    .left-ad { left: 0; }
+    .right-ad { right: 0; }
+
+    /* Main content shifts inward */
+    .main-content {
+      margin: 0 170px; /* Leaves room for ad frames */
+    }
+
+    header {
+      background: #1f1f1f;
+      padding: 1em;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.2em;
+    }
+    header p {
+      margin: 0;
+      font-size: 1em;
+      color: #aaa;
+      margin-top: 0.3em;
+    }
+    .filters {
+      display: flex;
+      justify-content: center;
+      gap: 1em;
+      padding: 1em;
+      background: #222;
+    }
+    select, button {
+      padding: 0.5em;
+      background: #333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .section-title {
+      font-size: 1.5em;
+      margin: 1em 0 0.5em 1em;
+      color: #66ccff;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1em;
+      padding: 1em;
+    }
+    .wallpaper {
+      background: #1a1a1a;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: transform 0.2s;
+      position: relative;
+    }
+    .wallpaper:hover {
+      transform: scale(1.03);
+    }
+    .wallpaper img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      display: block;
+    }
+    .info {
+      padding: 0.5em;
+      font-size: 0.9em;
+      background: #2a2a2a;
+    }
+    .download-btn,
+    .preview-btn,
+    .fav-btn {
+      display: inline-block;
+      width: 32%;
+      background: #4caf50;
+      color: white;
+      border: none;
+      padding: 0.5em;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 5px;
+      font-size: 0.9em;
+    }
+    .preview-btn {
+      background: #2196F3;
+    }
+    .fav-btn {
+      background: #e91e63;
+    }
+    .download-btn:hover {
+      background: #45a049;
+    }
+    .preview-btn:hover {
+      background: #1e88e5;
+    }
+    .fav-btn:hover {
+      background: #d81b60;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Ad Frames -->
+<div class="left-ad">
+  <div style="width: 160px; height: 600px; background-color: #333; color: #aaa; display: flex; align-items: center; justify-content: center; font-size: 0.9em; text-align: center;">
+    Ad Space
+  </div>
+</div>
+<div class="right-ad">
+  <div style="width: 160px; height: 600px; background-color: #333; color: #aaa; display: flex; align-items: center; justify-content: center; font-size: 0.9em; text-align: center;">
+    Ad Space
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+  <header>
+    <h1>Wallpaper Hub</h1>
+    <p>Endless eye candy. One click away.</p>
+  </header>
+
+  <div class="filters">
+    <select id="resolutionFilter">
+      <option value="all">All Resolutions</option>
+      <option value="mobile">Mobile</option>
+      <option value="1920x1080">1920x1080</option>
+      <option value="4k">4K</option>
+    </select>
+    <button onclick="toggleView('all')">All Wallpapers</button>
+    <button onclick="toggleView('favorites')">Favorites</button>
+  </div>
+
+  <div class="section-title" id="sectionTitle">All Wallpapers</div>
+  <div class="gallery" id="wallpaperGallery"></div>
+</div>
+
+<script>
+  const wallpapers = [];
+  const savedFavorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+
+  const resolutions = {
+    "mobile": [1080, 1920],
+    "1920x1080": [1920, 1080],
+    "4k": [3840, 2160]
+  };
+
+  let seed = 0;
+  const categories = ["nature", "marvel", "space", "gaming", "cars", "anime", "cyberpunk"];
+
+  categories.forEach(cat => {
+    for (let i = 0; i < 20; i++) {
+      const resKeys = Object.keys(resolutions);
+      const res = resKeys[i % resKeys.length];
+      const [w, h] = resolutions[res];
+      const url = `https://picsum.photos/seed/${cat + seed}/${w}/${h}`;
+      wallpapers.push({ url, res, category: cat });
+      seed++;
+    }
+  });
+
+  const gallery = document.getElementById("wallpaperGallery");
+  const resolutionFilter = document.getElementById("resolutionFilter");
+  const sectionTitle = document.getElementById("sectionTitle");
+  let currentView = "all";
+
+  function renderWallpapers() {
+    const filterRes = resolutionFilter.value;
+    const isFavorites = currentView === "favorites";
+
+    sectionTitle.textContent = isFavorites ? "Your Favorites" : "All Wallpapers";
+    gallery.innerHTML = "";
+
+    const list = isFavorites ? savedFavorites : wallpapers;
+
+    list.forEach(({ url, res, category }) => {
+      if (filterRes !== "all" && filterRes !== res) return;
+
+      const card = document.createElement("div");
+      card.className = "wallpaper";
+
+      const isFav = savedFavorites.some(f => f.url === url);
+
+      card.innerHTML = `
+        <img src="${url}" alt="Wallpaper">
+        <div class="info">Resolution: ${res.toUpperCase()}</div>
+        <button class="preview-btn" onclick="previewImage('${url}')">Preview</button>
+        <button class="download-btn" onclick="downloadImage('${url}')">Download</button>
+        <button class="fav-btn" onclick="toggleFavorite('${url}', '${res}', '${category}')">
+          ${isFav ? 'Unfave' : '❤️ Fave'}
+        </button>
+      `;
+      gallery.appendChild(card);
+    });
+  }
+
+  function toggleView(view) {
+    currentView = view;
+    renderWallpapers();
+  }
+
+  async function downloadImage(url) {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = blobUrl;
+    a.download = "wallpaper.jpg";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(blobUrl);
+  }
+
+  function previewImage(url) {
+    const previewWindow = window.open("", "_blank");
+    previewWindow.document.write(`
+      <html>
+        <head>
+          <title>Preview</title>
+          <style>
+            body {
+              margin: 0;
+              background-color: #000;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              height: 100vh;
+            }
+            img {
+              max-width: 100vw;
+              max-height: 100vh;
+              object-fit: contain;
+            }
+          </style>
+        </head>
+        <body>
+          <img src="${url}" alt="Preview" />
+        </body>
+      </html>
+    `);
+  }
+
+  function toggleFavorite(url, res, category) {
+    const exists = savedFavorites.find(f => f.url === url);
+    if (exists) {
+      const idx = savedFavorites.findIndex(f => f.url === url);
+      if (idx !== -1) savedFavorites.splice(idx, 1);
+    } else {
+      savedFavorites.push({ url, res, category });
+    }
+    localStorage.setItem("favorites", JSON.stringify(savedFavorites));
+    renderWallpapers();
+  }
+
+  resolutionFilter.addEventListener("change", renderWallpapers);
+  renderWallpapers();
+</script>
+
+</body>
+</html>
